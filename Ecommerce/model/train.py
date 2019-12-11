@@ -1,35 +1,42 @@
 import tensorflow as tf
 import numpy as np
-import os
+import os, sys
 import time
 import datetime
 from collections import defaultdict
-from model import data_helpers
-from model import metrics
-from model.model_IMN import IMN
 
+cur_dir = os.path.abspath(os.path.dirname(__file__))
+if cur_dir not in sys.path:
+    sys.path.append(cur_dir)
+
+import data_helpers
+import metrics
+from model_IMN import IMN
+
+repo_dir = os.path.dirname(cur_dir)
+DATA_DIR = os.path.join(repo_dir, "data/Ecommerce_Corpus")
 
 # Files
-tf.flags.DEFINE_string("train_file", "", "path to train file")
-tf.flags.DEFINE_string("valid_file", "", "path to valid file")
-tf.flags.DEFINE_string("test_file",  "", "path to test file")
-tf.flags.DEFINE_string("response_file", "", "path to response file")
-tf.flags.DEFINE_string("vocab_file", "", "vocabulary file (map word to integer)")
-tf.flags.DEFINE_string("embeded_vector_file", "", "pre-trained embedded word vector")
+tf.flags.DEFINE_string("train_file", os.path.join(DATA_DIR, "train.txt"), "path to train file")
+tf.flags.DEFINE_string("valid_file", os.path.join(DATA_DIR, "valid.txt"), "path to valid file")
+tf.flags.DEFINE_string("test_file", os.path.join(DATA_DIR, "test.txt"), "path to valid file")
+tf.flags.DEFINE_string("response_file", os.path.join(DATA_DIR, "responses.txt"), "path to response file")
+tf.flags.DEFINE_string("vocab_file", os.path.join(DATA_DIR, "vocab.txt"), "vocabulary file")
+tf.flags.DEFINE_string("embeded_vector_file", os.path.join(DATA_DIR, "tencent_200_plus_word2vec_200.txt"), "pre-trained embedded word vector")
 
 # Model Hyperparameters
 tf.flags.DEFINE_integer("max_utter_len", 50, "max utterance length")
 tf.flags.DEFINE_integer("max_utter_num", 10, "max utterance number")
 tf.flags.DEFINE_integer("max_response_len", 50, "max response length")
 tf.flags.DEFINE_integer("num_layer", 3, "max response length")
-tf.flags.DEFINE_integer("embedding_dim", 200, "dimensionality of word embedding")
+tf.flags.DEFINE_integer("embedding_dim", 400, "dimensionality of word embedding")
 tf.flags.DEFINE_integer("rnn_size", 200, "number of RNN units")
 
 # Training parameters
 tf.flags.DEFINE_integer("batch_size", 128, "batch size (default: 128)")
 tf.flags.DEFINE_float("l2_reg_lambda", 0, "L2 regularizaion lambda (default: 0)")
-tf.flags.DEFINE_float("dropout_keep_prob", 1.0, "dropout keep probability (default: 1.0)")
-tf.flags.DEFINE_integer("num_epochs", 1000000, "number of training epochs (default: 1000000)")
+tf.flags.DEFINE_float("dropout_keep_prob", 0.8, "dropout keep probability (default: 1.0)")
+tf.flags.DEFINE_integer("num_epochs", 10, "number of training epochs (default: 1000000)")
 tf.flags.DEFINE_integer("evaluate_every", 1000, "evaluate model on valid dataset after this many steps (default: 1000)")
 
 # Misc Parameters
@@ -45,15 +52,15 @@ print("")
 
 # Load data
 print("Loading data...")
-vocab = data_helpers.load_vocab(FLAGS.vocab_file)
-print('vocabulary size: {}'.format(len(vocab)))
+word2id = data_helpers.load_vocab(FLAGS.vocab_file)
+print('vocabulary size: {}'.format(len(word2id)))
 
-response_data = data_helpers.load_responses(FLAGS.response_file, vocab, FLAGS.max_response_len)
-train_dataset = data_helpers.load_dataset(FLAGS.train_file, vocab, FLAGS.max_utter_len, FLAGS.max_utter_num, response_data)
+response_data = data_helpers.load_responses(FLAGS.response_file, word2id, FLAGS.max_response_len)
+train_dataset = data_helpers.load_dataset(FLAGS.train_file, word2id, FLAGS.max_utter_len, FLAGS.max_utter_num, response_data)
 print('train_pairs: {}'.format(len(train_dataset)))
-valid_dataset = data_helpers.load_dataset(FLAGS.valid_file, vocab, FLAGS.max_utter_len, FLAGS.max_utter_num, response_data)  # *varied-length*
+valid_dataset = data_helpers.load_dataset(FLAGS.valid_file, word2id, FLAGS.max_utter_len, FLAGS.max_utter_num, response_data)  # *varied-length*
 print('valid_pairs: {}'.format(len(valid_dataset)))
-test_dataset = data_helpers.load_dataset(FLAGS.test_file, vocab, FLAGS.max_utter_len, FLAGS.max_utter_num, response_data)
+test_dataset = data_helpers.load_dataset(FLAGS.test_file, word2id, FLAGS.max_utter_len, FLAGS.max_utter_num, response_data)
 print('test_pairs: {}'.format(len(test_dataset)))
 
 target_loss_weight=[1.0,1.0]
@@ -69,9 +76,9 @@ with tf.Graph().as_default():
             max_utter_num=FLAGS.max_utter_num,
             max_response_len=FLAGS.max_response_len,
             num_layer=FLAGS.num_layer,
-            vocab_size=len(vocab),
+            vocab_size=len(word2id),
             embedding_size=FLAGS.embedding_dim,
-            vocab=vocab,
+            vocab=word2id,
             rnn_size=FLAGS.rnn_size,
             l2_reg_lambda=FLAGS.l2_reg_lambda)
         # Define Training procedure

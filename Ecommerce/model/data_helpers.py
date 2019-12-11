@@ -3,10 +3,10 @@ import random
 
 
 def load_vocab(fname):
-    vocab={}
+    vocab = {}
     with open(fname, 'rt') as f:
         for line in f:
-            line = line.strip()
+            # line = line.strip()
             fields = line.split('\t')
             term_id = int(fields[1])
             vocab[fields[0]] = term_id

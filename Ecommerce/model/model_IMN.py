@@ -12,7 +12,8 @@ def get_embeddings(vocab):
 def load_embed_vectors(fname, dim):
     vectors = {}
     for line in open(fname, 'rt'):
-        items = line.strip().split(' ')
+        # items = line.strip().split(' ')
+        items = line.split(' ')
         if len(items[0]) <= 0:
             continue
         vec = [float(items[i]) for i in range(1, dim+1)]

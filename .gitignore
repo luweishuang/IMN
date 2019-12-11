@@ -1,0 +1,8 @@
+.idea/
+Douban/data/Douban_Corpus.zip
+Douban/data/Douban_Corpus/
+Ecommerce/data/Ecommerce_Corpus.zip
+Ecommerce/data/Ecommerce_Corpus/
+Ubuntu_V1/data/Ubuntu_Corpus_V1.zip
+Ubuntu_V2/data/Ubuntu_Corpus_V2.zip
+Ecommerce/model/__pycache__/
