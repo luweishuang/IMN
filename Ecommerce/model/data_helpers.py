@@ -84,6 +84,34 @@ def load_dataset(fname, vocab, max_utter_len, max_utter_num, responses):
     return dataset
 
 
+def load_dataset_infer(query_sent, vocab, max_utter_len, max_utter_num, responses_data, max_response_len):
+    dataset = []
+    us_id = 0
+    for r_id in range(len(responses_data)):
+        response_line = responses_data[r_id]
+
+        context = query_sent + " _EOS_"
+        utterances = (context + ' ').split(' _EOS_ ')[:-1]
+        utterances = [utterance + " _EOS_" for utterance in utterances]
+        utterances = utterances[-max_utter_num:]   # select the last max_utter_num utterances
+
+        us_tokens = []
+        us_vec = []
+        us_len = []
+        for utterance in utterances:
+            u_tokens = utterance.split(' ')[:max_utter_len]      # select the first max_utter_len tokens in every utterance
+            u_len, u_vec = to_vec(u_tokens, vocab, max_utter_len)
+            us_tokens.append(u_tokens)
+            us_vec.append(u_vec)
+            us_len.append(u_len)
+        us_num = len(utterances)
+
+        r_tokens = response_line.split(' ')
+        r_len, r_vec = to_vec(r_tokens[:max_response_len], vocab, max_response_len)
+        dataset.append((us_id, us_len, us_vec, us_num, r_id, r_len, r_vec, 0.0, us_tokens, r_tokens[:max_response_len]))
+    return dataset
+
+
 def normalize_vec(vec, maxlen):
     '''
     pad the original vec to the same maxlen
@@ -141,7 +169,6 @@ def batch_iter(data, batch_size, num_epochs, target_loss_weights, max_utter_len,
                 x_response_len.append(r_len)
                 targets.append(label)
                 id_pairs.append((us_id, r_id, int(label)))
-
                 x_utterances_num.append(us_num)
 
             yield np.array(x_utterances), np.array(x_response), np.array(x_utterances_len), np.array(x_response_len), \
