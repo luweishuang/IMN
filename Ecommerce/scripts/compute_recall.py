@@ -1,5 +1,5 @@
 
-test_out_filename = "Ecommerce_test_out.txt"
+test_out_filename = "../model/Ecommerce_test_out.txt"
 
 with open(test_out_filename, 'r') as f:
 	num_query = 0
@@ -9,7 +9,7 @@ with open(test_out_filename, 'r') as f:
 
 	lines = f.readlines()
 	relevance_list = []
-	for i,line in enumerate(lines[1:]):
+	for i, line in enumerate(lines[1:]):
 		line = line.strip().split('\t')
 		line = [float(ele) for ele in line]
 

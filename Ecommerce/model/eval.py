@@ -1,21 +1,30 @@
+import os, sys
 import tensorflow as tf
-from model import data_helpers
 from collections import defaultdict
 import operator
+
+cur_dir = os.path.abspath(os.path.dirname(__file__))
+if cur_dir not in sys.path:
+    sys.path.append(cur_dir)
+
 import metrics
+import data_helpers
+
+repo_dir = os.path.dirname(cur_dir)
+DATA_DIR = os.path.join(repo_dir, "data/Ecommerce_Corpus")
 
 # Files
-tf.flags.DEFINE_string("test_file", "", "path to test file")
-tf.flags.DEFINE_string("response_file", "", "path to response file")
-tf.flags.DEFINE_string("vocab_file", "", "path to vocabulary file")
-tf.flags.DEFINE_string("output_file", "", "prediction output file")
+tf.flags.DEFINE_string("test_file", os.path.join(DATA_DIR, "test.txt"), "path to valid file")
+tf.flags.DEFINE_string("response_file", os.path.join(DATA_DIR, "responses.txt"), "path to response file")
+tf.flags.DEFINE_string("vocab_file", os.path.join(DATA_DIR, "vocab.txt"), "vocabulary file")
+tf.flags.DEFINE_string("output_file", "./Ecommerce_test_out.txt", "prediction output file")
 
 # Model Hyperparameters
 tf.flags.DEFINE_integer("max_utter_len", 50, "max utterance length")
 tf.flags.DEFINE_integer("max_utter_num", 10, "max utterance number")
 tf.flags.DEFINE_integer("max_response_len", 50, "max response length")
 tf.flags.DEFINE_integer("batch_size", 128, "batch size")
-tf.flags.DEFINE_string("checkpoint_dir", "", "checkpoint directory from training run")
+tf.flags.DEFINE_string("checkpoint_dir", "./checkpoints", "checkpoint directory from training run")
 
 # Misc Parameters
 tf.flags.DEFINE_boolean("allow_soft_placement", True, "Allow device soft device placement")
@@ -29,14 +38,14 @@ for attr, value in sorted(FLAGS.__flags.items()):
     print("{}={}".format(attr.upper(), value))
 print("")
 
-vocab = data_helpers.load_vocab(FLAGS.vocab_file)
-print('vocabulary size: {}'.format(len(vocab)))
+word2id = data_helpers.load_vocab(FLAGS.vocab_file)
+print('vocabulary size: {}'.format(len(word2id)))
 
-response_data = data_helpers.load_responses(FLAGS.response_file, vocab, FLAGS.max_response_len)
-test_dataset = data_helpers.load_dataset(FLAGS.test_file, vocab, FLAGS.max_utter_len, FLAGS.max_utter_num, response_data)
+response_data = data_helpers.load_responses(FLAGS.response_file, word2id, FLAGS.max_response_len)
+test_dataset = data_helpers.load_dataset(FLAGS.test_file, word2id, FLAGS.max_utter_len, FLAGS.max_utter_num, response_data)
 print('test_pairs: {}'.format(len(test_dataset)))
 
-target_loss_weight=[1.0,1.0]
+target_loss_weight = [1.0, 1.0]
 
 print("\nEvaluating...\n")
 checkpoint_file = tf.train.latest_checkpoint(FLAGS.checkpoint_dir)

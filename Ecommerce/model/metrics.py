@@ -5,7 +5,7 @@ def is_valid_query(v):
     num_pos = 0
     num_neg = 0
     for aid, label, score in v:
-        if label  > 0:
+        if label > 0:
             num_pos += 1
         else:
             num_neg += 1
@@ -14,6 +14,7 @@ def is_valid_query(v):
     else:
         return False
 
+
 def get_num_valid_query(results):
     num_query = 0
     for k, v in results.items():
@@ -21,6 +22,7 @@ def get_num_valid_query(results):
             continue
         num_query += 1
     return num_query
+
 
 def top_1_precision(results):
     num_query = 0
@@ -38,6 +40,7 @@ def top_1_precision(results):
         return top_1_correct/num_query
     else:
         return 0.0
+
 
 def mean_reciprocal_rank(results):
     num_query = 0
@@ -59,6 +62,7 @@ def mean_reciprocal_rank(results):
     else:
         mrr = mrr/num_query
         return mrr
+
 
 def mean_average_precision(results):
     num_query = 0
@@ -86,6 +90,7 @@ def mean_average_precision(results):
         mvp = mvp/num_query
         return mvp
 
+
 def classification_metrics(results):
     total_num = 0
     total_correct = 0
@@ -93,12 +98,11 @@ def classification_metrics(results):
     positive_correct = 0
     predicted_positive = 0
 
-    loss = 0.0;
+    loss = 0.0
     for k, v in results.items():
         for rec in v:
             total_num += 1
             aid, label, score = rec
-            
 
             if score > 0.5:
                 predicted_positive += 1
@@ -107,7 +111,7 @@ def classification_metrics(results):
                 true_positive += 1
                 loss += -math.log(score+1e-12)
             else:
-                loss += -math.log(1.0 - score + 1e-12);
+                loss += -math.log(1.0 - score + 1e-12)
 
             if score > 0.5 and label > 0:
                 total_correct += 1

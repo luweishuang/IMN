@@ -227,8 +227,8 @@ class IMN(object):
 
             losses = tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=self.target)
             losses = tf.multiply(losses, self.target_loss_weight)
-            self.mean_loss = tf.reduce_mean(losses, name="mean_loss") + l2_reg_lambda * l2_loss + sum(
-                                                              tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES))
+            self.mean_loss = tf.reduce_mean(losses, name="mean_loss") + l2_reg_lambda * l2_loss + \
+                                sum(tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES))
 
         with tf.name_scope("accuracy"):
             correct_prediction = tf.equal(tf.sign(self.probs - 0.5), tf.sign(self.target - 0.5))    # [batch_size, ]

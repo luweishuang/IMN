@@ -56,6 +56,7 @@ word2id = data_helpers.load_vocab(FLAGS.vocab_file)
 print('vocabulary size: {}'.format(len(word2id)))
 
 response_data = data_helpers.load_responses(FLAGS.response_file, word2id, FLAGS.max_response_len)
+# 数据集中的一行 = context为多轮对话 + 标签(0:不相关,1:相关) + response_context
 train_dataset = data_helpers.load_dataset(FLAGS.train_file, word2id, FLAGS.max_utter_len, FLAGS.max_utter_num, response_data)
 print('train_pairs: {}'.format(len(train_dataset)))
 valid_dataset = data_helpers.load_dataset(FLAGS.valid_file, word2id, FLAGS.max_utter_len, FLAGS.max_utter_num, response_data)  # *varied-length*
