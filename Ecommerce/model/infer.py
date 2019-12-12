@@ -43,7 +43,7 @@ system:正品 有 保障 的 哦 亲亲 放心 呢
 user:好 的
 system:谢谢您 对 我 和 我们 店铺 的 信赖 我们 时刻 等待 着 您 的 再次 光临 哦 祝您 生活 愉快
 '''
-query_sent = "货要真的"
+query_sent = "货要 真的"
 response_data = []
 with open(FLAGS.response_file, 'rt') as f:
     for line in f:
