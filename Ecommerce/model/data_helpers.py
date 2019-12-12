@@ -12,6 +12,7 @@ def load_vocab(fname):
             vocab[fields[0]] = term_id
     return vocab
 
+
 def to_vec(tokens, vocab, maxlen):
     '''
     length: length of the input sequence
@@ -27,6 +28,7 @@ def to_vec(tokens, vocab, maxlen):
         else:
             vec.append(vocab["_OOV_"])
     return length, np.array(vec)
+
 
 def load_responses(fname, vocab, maxlen):
     responses={}
@@ -44,9 +46,9 @@ def load_responses(fname, vocab, maxlen):
             responses[fields[0]] = (len1, vec, tokens[:maxlen])
     return responses
 
-def load_dataset(fname, vocab, max_utter_len, max_utter_num, responses):
 
-    dataset=[]
+def load_dataset(fname, vocab, max_utter_len, max_utter_num, responses):
+    dataset = []
     with open(fname, 'rt') as f:
         for line in f:
             fields = line.strip().split('\t')
@@ -66,7 +68,6 @@ def load_dataset(fname, vocab, max_utter_len, max_utter_num, responses):
                 us_tokens.append(u_tokens)
                 us_vec.append(u_vec)
                 us_len.append(u_len)
-
             us_num = len(utterances)
 
             if fields[3] != "NA":
@@ -82,6 +83,7 @@ def load_dataset(fname, vocab, max_utter_len, max_utter_num, responses):
                     dataset.append((us_id, us_len, us_vec, us_num, r_id, r_len, r_vec, 1.0, us_tokens, r_tokens))
     return dataset
 
+
 def normalize_vec(vec, maxlen):
     '''
     pad the original vec to the same maxlen
@@ -89,7 +91,6 @@ def normalize_vec(vec, maxlen):
     '''
     if len(vec) == maxlen:
         return vec
-
     new_vec = np.zeros(maxlen, dtype='int32')
     for i in range(len(vec)):
         new_vec[i] = vec[i]
@@ -114,16 +115,15 @@ def batch_iter(data, batch_size, num_epochs, target_loss_weights, max_utter_len,
             x_utterances_len = []
             x_response_len = []
             targets = []
-            target_weights=[]
-            id_pairs =[]
-
+            target_weights = []
+            id_pairs = []
             x_utterances_num = []
 
             for rowIdx in range(start_index, end_index):
                 us_id, us_len, us_vec, us_num, r_id, r_len, r_vec, label, us_tokens, r_tokens = data[rowIdx]
-                if label > 0:
+                if label > 0:    # 相关
                     target_weights.append(target_loss_weights[1])
-                else:
+                else:           # 不相关
                     target_weights.append(target_loss_weights[0])
 
                 # normalize us_vec and us_len

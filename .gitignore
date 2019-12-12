@@ -6,3 +6,4 @@ Ecommerce/data/Ecommerce_Corpus/
 Ubuntu_V1/data/Ubuntu_Corpus_V1.zip
 Ubuntu_V2/data/Ubuntu_Corpus_V2.zip
 Ecommerce/model/__pycache__/
+Ecommerce/model/checkpoints/

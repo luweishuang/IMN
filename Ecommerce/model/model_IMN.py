@@ -205,7 +205,7 @@ class IMN(object):
         with tf.variable_scope("prediction_layer") as vs:
             hidden_input_size = joined_feature.get_shape()[1].value
             hidden_output_size = 256
-            regularizer = tf.contrib.layers.l2_regularizer(l2_reg_lambda)
+            regularizer = tf.contrib.layers.l2_regularizer(float(l2_reg_lambda))
             #regularizer = None
             joined_feature = tf.nn.dropout(joined_feature, keep_prob=self.dropout_keep_prob)
             full_out = tf.contrib.layers.fully_connected(joined_feature, hidden_output_size,
@@ -227,8 +227,8 @@ class IMN(object):
 
             losses = tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=self.target)
             losses = tf.multiply(losses, self.target_loss_weight)
-            self.mean_loss = tf.reduce_mean(losses, name="mean_loss") + l2_reg_lambda * l2_loss + sum(
-                                                              tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES))
+            self.mean_loss = tf.reduce_mean(losses, name="mean_loss") + l2_reg_lambda * l2_loss + \
+                                sum(tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES))
 
         with tf.name_scope("accuracy"):
             correct_prediction = tf.equal(tf.sign(self.probs - 0.5), tf.sign(self.target - 0.5))    # [batch_size, ]
