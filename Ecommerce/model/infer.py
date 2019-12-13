@@ -52,20 +52,6 @@ system:谢谢您 对 我 和 我们 店铺 的 信赖 我们 时刻 等待 着 �
 '''
 test_dialogue_data = json.load(open(os.path.join(DATA_DIR, "all_test_dialogue.json"), "r", encoding="utf-8"))
 random.shuffle(test_dialogue_data)
-for cur_dialogue in test_dialogue_data:
-    print("--------------true dialogue ------------------------")
-    for idx, cur_line in cur_dialogue.items():
-        if int(idx) % 2 == 0:
-            print("user: " + cur_line)
-        else:
-            print("agent: " + cur_line)
-cur_index = randint(0, len(test_dialogue_data))
-demo_dialogue = test_dialogue_data[cur_index]
-test_dialogue_data.pop(cur_index)
-# query_sent = "货要 真的"
-#
-# test_dataset = data_helpers.load_dataset_infer(query_sent, word2id, FLAGS.max_utter_len, FLAGS.max_utter_num, response_data, FLAGS.max_response_len)
-# print('test_pairs: {}'.format(len(test_dataset)))
 
 target_loss_weight = [1.0, 1.0]
 
