@@ -3,6 +3,10 @@ Ecommerce/model/runs/
 .idea/
 Douban/data/Douban_Corpus.zip
 Douban/data/Douban_Corpus/
+Ecommerce/data/Ecommerce_Corpus/responses.txt
+Ecommerce/data/Ecommerce_Corpus/tencent_200_plus_word2vec_200.txt
+Ecommerce/data/Ecommerce_Corpus/train.txt
+Ecommerce/data/Ecommerce_Corpus/valid.txt
 Ecommerce/data/Ecommerce_Corpus.zip
 Ecommerce/data/Ecommerce_Corpus/
 Ubuntu_V1/data/Ubuntu_Corpus_V1.zip
