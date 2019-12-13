@@ -98,6 +98,7 @@ with graph.as_default():
             if user_input == "quit":
                 break
             query_sent += user_input.strip()
+            # print("query_sent: " + query_sent)
             test_dataset = data_helpers.load_dataset_infer(query_sent, word2id, FLAGS.max_utter_len, FLAGS.max_utter_num, response_data, FLAGS.max_response_len)
             # print('test_pairs: {}'.format(len(test_dataset)))
 
@@ -118,15 +119,15 @@ with graph.as_default():
 
                 rst_scores[num_test:num_test + len(predicted_prob)] = predicted_prob
                 num_test += len(predicted_prob)
-                print('num_test_sample={}'.format(num_test))
-
+                # print('num_test_sample={}'.format(num_test))
             rst_scores_list = rst_scores.tolist()
-            indies = np.argsort(rst_scores_list, kind='heapsort')
-            rst_scores_list.sort()
-            for jj in range(5):
-                print(rst_scores_list[jj] + "==> " + response_data[indies[jj]])
             # max_score = max(rst_scores_list)  # 返回最大值
-            # max_index = rst_scores_list.index(max(rst_scores_list))  # 返回最大值的索引
-            # print(max_index, max_score)
+            # max_index = rst_scores_list.index(max_score)  # 返回最大值的索引
+            # print("max_index=%d, max_score=%f " % (max_index, max_score))
             # print(response_data[max_index])
+            indies = np.argsort(-rst_scores)
+            rst_scores_list.sort(reverse=True)
+            print("agent: " + response_data[indies[0]])
+            for jj in range(5):
+                print(str(rst_scores_list[jj]) + "==> " + response_data[indies[jj]])
             query_sent += " _EOS_" + response_data[indies[0]] + " _EOS_"
